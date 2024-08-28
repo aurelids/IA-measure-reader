@@ -1,2 +1,3 @@
 # Dependências do Node.js
 node_modules/
+.env
