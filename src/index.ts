@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import path from 'path';
 import routes from './routes/routes';
 
 const app = express();
@@ -7,6 +8,9 @@ const app = express();
 // Ajuste o limite de payload para 10mb ou o valor que você precisar
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Middleware para servir arquivos estáticos do diretório temp
+app.use('/temp', express.static(path.join(__dirname, 'temp')));
 
 // Use as rotas importadas
 app.use('/api/measures', routes);

@@ -1,8 +1,27 @@
-// src/controllers/uploadController.ts
 import { Request, Response } from 'express';
 import { Measure } from '../models/Measure';
-import { getMeasureFromImage } from '../services/geminiService';  
-import { v4 as uuidv4 } from 'uuid';  
+import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
+import { getMeasureFromImage } from '../services/geminiService';  // Importe a função do Gemini
+
+// Função para criar um arquivo temporário com base64
+function createTempImage(base64Image: string): string {
+    const fileName = `${crypto.randomBytes(16).toString('hex')}.jpg`; // Gera um nome único para o arquivo
+    const filePath = path.join(__dirname, '../temp', fileName); // Caminho do arquivo temporário
+
+    // Cria o diretório temp se não existir
+    if (!fs.existsSync(path.dirname(filePath))) {
+        fs.mkdirSync(path.dirname(filePath));
+    }
+
+    // Remove o prefixo da base64 e escreve a imagem no arquivo
+    const base64Data = base64Image.replace(/^data:image\/jpeg;base64,/, '');
+    fs.writeFileSync(filePath, base64Data, 'base64');
+
+    return filePath;
+}
 
 export const uploadMeasure = async (req: Request, res: Response) => {
     const { image, customer_code, measure_datetime, measure_type } = req.body;
@@ -33,13 +52,16 @@ export const uploadMeasure = async (req: Request, res: Response) => {
         });
     }
 
+    // Criar um arquivo temporário com a imagem base64
+    const imagePath = createTempImage(image);
+
     try {
         // Integrar com a API de LLM (Google Gemini)
         const measure_value = await getMeasureFromImage(image);  // Chama a função que processa a imagem
 
-        // Supondo que você tenha um link temporário para a imagem (se não tiver, remova isso ou implemente como precisar)
-        const image_url = 'http://example.com/image.jpg'; // Exemplo
-        const measure_uuid = uuidv4();  // Gerar um UUID novo
+        // Gerar um UUID novo e criar a URL para a imagem
+        const measure_uuid = uuidv4();
+        const image_url = `http://localhost:3000/temp/${path.basename(imagePath)}`;
 
         const newMeasure = new Measure({
             measure_uuid,

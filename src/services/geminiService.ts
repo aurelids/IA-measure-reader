@@ -24,7 +24,7 @@ async function getMeasureFromImage(base64Image: string): Promise<number> {
     const imagePart = {
         inlineData: {
             data: cleanBase64Image,
-            mimeType: 'image/jpeg',  // Certifique-se de que o mimeType está correto
+            mimeType: 'image/jpeg',  
         },
     };
 
