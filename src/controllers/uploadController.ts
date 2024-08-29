@@ -1,6 +1,6 @@
-// src/controllers/uploadController.ts
 import { Request, Response } from 'express';
 import { Measure } from '../models/Measure';
+import { v4 as uuidv4 } from 'uuid';  // Importa a função para gerar UUIDs
 
 export const uploadMeasure = async (req: Request, res: Response) => {
     const { image, customer_code, measure_datetime, measure_type } = req.body;
@@ -38,7 +38,8 @@ export const uploadMeasure = async (req: Request, res: Response) => {
   const responseFromAPI = {
     image_url: 'http://example.com/image.jpg', // Exemplo
     measure_value: 123, // Exemplo
-    measure_uuid: 'some-uuid' // Exemplo
+    // O UUID será gerado aqui
+    measure_uuid: uuidv4()  // Gerar um UUID novo
   };
 
   const newMeasure = new Measure({
