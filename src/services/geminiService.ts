@@ -1,8 +1,8 @@
+// src/services/geminiService.ts
 import dotenv from "dotenv";
-import fs from 'fs';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-dotenv.config(); 
+dotenv.config();
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
@@ -11,23 +11,25 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
-function fileToGenerativePart(path: string, mimeType: string) {
-    return {
-        inlineData: {
-            data: Buffer.from(fs.readFileSync(path)).toString("base64"),
-            mimeType,
-        },
-    };
+function removeBase64Prefix(base64String: string): string {
+    const base64Data = base64String.replace(/^data:image\/(png|jpeg);base64,/, '');
+    return base64Data;
 }
 
-async function run() {
+async function getMeasureFromImage(base64Image: string): Promise<number> {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+    const cleanBase64Image = removeBase64Prefix(base64Image);
+
+    const imagePart = {
+        inlineData: {
+            data: cleanBase64Image,
+            mimeType: 'image/jpeg',  // Certifique-se de que o mimeType está correto
+        },
+    };
+
     const prompt = "Qual número você vê na imagem?";
-
-    const imageParts = [fileToGenerativePart('C:/Users/Gabriel Cogo/Desktop/Projetos/Shopper/desafio-shopper/numeros.jpeg', 'image/jpeg')];
-
-    const result = await model.generateContent([prompt, ...imageParts]);
+    const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;
     const text = await response.text();
 
@@ -39,9 +41,10 @@ async function run() {
     if (match) {
         const number = parseInt(match[0], 10); // Converte para inteiro
         console.log("Número extraído:", number);
+        return number;
     } else {
-        console.log("Nenhum número encontrado.");
+        throw new Error("Nenhum número encontrado.");
     }
 }
 
-run();
+export { getMeasureFromImage };
