@@ -1,4 +1,3 @@
-// src/controllers/listController.ts
 import { Request, Response } from 'express';
 import { listMeasuresByCustomerCode } from '../services/listService';
 
@@ -31,6 +30,7 @@ export const list = async (req: Request, res: Response) => {
         measure_type: measure.measure_type,
         has_confirmed: measure.has_confirmed,
         image_url: measure.image_url,
+        description: 'Operação realizada com sucesso.'
       })),
     });
   } catch (error) {

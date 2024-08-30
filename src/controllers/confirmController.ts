@@ -4,7 +4,7 @@ import { confirmMeasure } from '../services/confirmService';
 export const confirm = async (req: Request, res: Response) => {
   const { measure_uuid, confirmed_value } = req.body;
 
-  // Validar o tipo de dados dos parâmetros enviados
+  
   if (typeof measure_uuid !== 'string' || typeof confirmed_value !== 'number') {
     return res.status(400).json({
       error_code: 'INVALID_DATA',
@@ -22,7 +22,10 @@ export const confirm = async (req: Request, res: Response) => {
       });
     }
 
-    return res.status(200).json({ success: true });
+    return res.status(200).json({
+      success: true,
+      description: 'Operação realizada com sucesso'
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       if (error.message === 'CONFIRMATION_DUPLICATE') {
@@ -38,7 +41,6 @@ export const confirm = async (req: Request, res: Response) => {
       });
     }
 
-    // Caso o erro não seja uma instância de Error
     return res.status(500).json({
       error_code: 'UNKNOWN_ERROR',
       error_description: 'Erro desconhecido ao confirmar leitura.',

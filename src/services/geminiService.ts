@@ -1,4 +1,3 @@
-// src/services/geminiService.ts
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -33,14 +32,12 @@ async function getMeasureFromImage(base64Image: string): Promise<number> {
     const response = await result.response;
     const text = await response.text();
 
-    console.log("Texto retornado:", text);
 
-    // Extraindo apenas o número da string retornada
-    const match = text.match(/\d+/); // Encontra números na string
+   
+    const match = text.match(/\d+/); 
 
     if (match) {
-        const number = parseInt(match[0], 10); // Converte para inteiro
-        console.log("Número extraído:", number);
+        const number = parseInt(match[0], 10); 
         return number;
     } else {
         throw new Error("Nenhum número encontrado.");
