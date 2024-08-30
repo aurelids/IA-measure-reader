@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
-import routes from './routes/routes';
+import router from './routes/routes';
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/temp', express.static(path.join(__dirname, 'temp')));
 
 
-app.use('/', routes);
+app.use('/', router);
 
 const PORT = process.env.PORT || 3000;
 
